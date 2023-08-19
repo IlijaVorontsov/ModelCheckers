@@ -1,0 +1,11 @@
+name,result,tick,depth
+texas.ifetch1^5.E.aag,FAIL,20,
+vis.eisenberg.E.aag,FAIL,20,
+texas.two_proc^1.E.aag,FAIL,14,
+nusmv.tcas-t^1.B.aag,FAIL,11,
+texas.PI_main^02.E.aag,FAIL,3,
+nusmv.syncarb5^2.B.aag,OK,3,9
+vis.emodel.E.aag,OK,1,4
+cmu.gigamax.B.aag,OK,2,5
+ken.flash^01.C.aag,OK,2,2
+texas.ifetch1^3.E.aag,OK,1,3
