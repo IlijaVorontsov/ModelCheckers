@@ -1,6 +1,4 @@
-bin
-include
-lib
-pyvenv.cfg
-*.lrat
-try*
+*
+!modelcheckers
+!requirements.txt
+!benchmarks
