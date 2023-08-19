@@ -7,7 +7,7 @@ class BoundedModelChecker:
         self.circuit = AigerCircuit(aigerfile)
         self.aigerfile = aigerfile
         self.solver = Cadical()
-        self.solver.add_clause([1])
+        self.solver.add_clause([1])  # constant true
 
     def add_check(self, k: int):
         self.solver.add_formula(self.circuit.clauses_system(k))
