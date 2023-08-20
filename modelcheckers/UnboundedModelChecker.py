@@ -1,14 +1,20 @@
-from Interpolant import Interpolant
-from Solvers import ProofSolver, SAT
-from BoundedModelChecker import BoundedModelChecker
+
+from sat_logic.Interpolant import Interpolant, SATException
+try:
+    from modelcheckers.BoundedModelChecker import BoundedModelChecker
+except ModuleNotFoundError:
+    from BoundedModelChecker import BoundedModelChecker
+
+from sat_logic.ColoredLogic import ColorfulCNF
+from sat_logic.Logic import CNF
 
 
 class UnboundedModelChecker(BoundedModelChecker):
     def check(self):
         tick = 0
         while True:
-            print(f"Checking tick {tick}")
             if not self.add_check(tick):
+                print(f"Tick: {tick} @ 0")
                 return False
 
             if tick != 0 and self.invariantConverges(tick):
@@ -16,28 +22,25 @@ class UnboundedModelChecker(BoundedModelChecker):
             tick += 1
 
     def invariantConverges(self, tick: int):
-        solver = ProofSolver()
-        solver.add_formula(self.circuit.clauses_gates(0))
-        solver.add_formula(self.circuit.clauses_system(1))
-        solver.add_formula(self.circuit.b)
-        solver.add_clause(self.circuit.clause_output(tick))
-        b = self.circuit.b & self.circuit.clause_output(tick)
-
         reachable = self.circuit.clauses_latches(0)
+        transition1 = self.circuit.clauses_gates(
+            0) & self.circuit.clauses_system(1)
+        rest = self.circuit.b & CNF(self.circuit.clause_output(tick))
 
         round = 0
-
         while True:
-            print(f"Checking round {round}")
-            solver.add_formula(self.circuit.applySwitch(reachable, round))
-            if solver.solve(assumptions=self.circuit.assumptions(round)) == SAT:
+            print(f"Tick: {tick} @{round}", end="\r")
+            try:
+                interpolant = Interpolant(ColorfulCNF(
+                    [reachable & transition1, rest]))
+                interpolant = interpolant.cnf
+            except SATException:
                 return False
 
-            # switches not in b, so dropped during interpolation
-            interpolant = Interpolant("proof.trace", b).CNF
             interpolant = self.circuit.cnfAtTick(interpolant, 0)
 
-            if ProofSolver.implies(interpolant, reachable):
+            if interpolant.implies(reachable):
+                print(f"Tick: {tick} @{round}")
                 return True
 
             reachable = reachable | interpolant
