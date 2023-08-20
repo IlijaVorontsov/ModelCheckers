@@ -1,1 +1,0 @@
-sat-logic @ git+ssh://git@github.com/IlijaVorontsov/sat-logic.git@4cfa43b7d88c1bb2654c4d970cf7ae58aa7693a0
